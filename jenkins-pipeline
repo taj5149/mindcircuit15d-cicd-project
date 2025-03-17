@@ -1,0 +1,23 @@
+pipeline {
+    agent any
+    stages{
+        stage('cloning code from github'){
+            steps{
+                echo 'cloning code from github'
+                git branch: 'main', url: 'https://github.com/taj5149/mindcircuit15d-cicd-project.git'
+            }
+        }
+        stage('build code using jenkins'){
+            steps{
+                echo 'building the code using jenkins'
+                sh 'mvn clean install'
+            }
+        }
+        stage('deploying the code using tomcat'){
+            steps{
+                echo 'deploying the code using tomcat'
+                deploy adapters: [tomcat9(credentialsId: 'tomcatID', path: '', url: 'http://35.174.136.213:8080')], contextPath: 'insta', war: '**/*.war'
+            }
+        }
+    }
+}
