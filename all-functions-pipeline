@@ -1,0 +1,67 @@
+pipeline{
+    agent none
+    triggers{
+        githubPush()
+    }
+    environment{
+        GIT_BRANCH='main'
+        GIT_URL='https://github.com/taj5149/mindcircuit15d-cicd-project.git'
+        
+        
+    }
+    stages{
+        stage('clean workspace'){
+            agent { label 'slave-1'}
+            steps{
+                cleanWs()
+                
+            } 
+        }
+        stage('clone code from github'){
+            agent { label 'slave-1'}
+            steps{
+                script{
+                    try{
+                    echo 'cloning code from github'
+                    git branch:"${GIT_BRANCH}", url:"${GIT_URL}"
+                    stash includes: '',name:'batch15-code'
+                    }
+                    catch(Exception e){
+                        echo 'stage 1 is failed : ${e.messsage}'
+                    }
+                }
+            }
+        }
+        stage('building the code using jenkins and generating .war artifact'){
+            agent { label 'slave-1'}
+            steps{
+                script{
+                    echo 'building the code using jenkins and .war file generating'
+                    unstash 'batch15-code'
+                    sh 'mvn clean install'
+                }
+            }
+        }
+        stage('deploy to multiple environments'){
+            parallel{
+                stage('lab'){
+                    agent { label 'slave-1'}
+                    steps{
+                    echo 'deploy to lab env'
+                    unstash 'batch15-code'
+                    deploy adapters: [tomcat9(credentialsId: 'tomcat', path: '', url: 'http://50.17.108.77:8080/')], contextPath: 'lab-env', war: '**/*.war'
+                    }
+                        
+                    }
+                stage('prod-server'){
+                    agent { label 'slave-1'}
+                    steps{
+                    echo 'deploy to prod-server'
+                    unstash 'batch15-code'
+                    deploy adapters: [tomcat9(credentialsId: 'tomcat', path: '', url: 'http://50.17.108.77:8080/')], contextPath: 'prod-env', war: '**/*.war'
+                    }
+                }
+            }
+        }
+    }
+}
