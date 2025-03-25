@@ -1,24 +1,23 @@
-pipeline{
+pipeline {
     agent any
     stages{
-        stage('cloning the github code'){
+        stage('cloneing code from github'){
             steps{
-                echo 'cloning the code from github'
+                echo 'cloneing the code from github URL'
                 git branch: 'main', url: 'https://github.com/taj5149/mindcircuit15d-cicd-project.git'
             }
         }
-        stage('building the code using jenkins'){
+        stage('building the code using jenkins and generating artifact .war'){
             steps{
-                echo 'cloning the code and build the code and generating .war artifact'
+                echo 'building code and generating .war file'
                 sh 'mvn clean install'
             }
         }
-        stage('deploying into tomcat'){
+        stage('deploying the .war artifact using tomcat'){
             steps{
-                echo 'deploying the .war artifact into tomcat server'
-                deploy adapters: [tomcat9(credentialsId: 'tomcatID', path: '', url: 'http://ec2-54-162-199-174.compute-1.amazonaws.com:8080/')], contextPath: 'devops-pipeline', war: '**/*.war'
+                echo 'deploying .war using tomcat'
+                deploy adapters: [tomcat9(credentialsId: 'tomcatID', path: '', url: 'http://50.17.108.77:8080/')], contextPath: 'insta', war: '**/*.war'
             }
         }
-        
     }
 }
