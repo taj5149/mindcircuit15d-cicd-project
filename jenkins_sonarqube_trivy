@@ -1,0 +1,35 @@
+pipeline {
+    agent any
+    tools{
+maven 'Maven_3.9.9'
+}
+    stages{
+        stage('cloneing code from github'){
+            steps{
+                echo 'cloneing the code from github URL'
+                git branch: 'main', url: 'https://github.com/taj5149/mindcircuit15d-cicd-project.git'
+            }
+        }
+        stage('sonar qube scan){
+            steps{
+                echo 'scanning the code using sonarqube-scan'
+                sh 'ls -lrth'
+                sh ''' mvn sonar:sonar\\\
+                  -Dsonar.host.url=http://3.85.2.166:9000\\\
+                  -Dsonar.login=squ_fb5fdb469f3cbfe23a88554ae7cd3ba7e3c29263'''
+                }
+          }
+        stage('building the code using jenkins and generating artifact .war'){
+            steps{
+                echo 'building code and generating .war file'
+                sh 'mvn clean install'
+            }
+        }
+        stage('deploying the .war artifact using tomcat'){
+            steps{
+                echo 'deploying .war using tomcat'
+                deploy adapters: [tomcat9(credentialsId: 'tomcatID', path: '', url: 'http://54.88.158.192:8080/')], contextPath: 'insta', war: '**/*.war'
+            }
+        }
+    }
+}
