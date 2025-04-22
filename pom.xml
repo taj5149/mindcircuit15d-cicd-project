@@ -17,12 +17,12 @@
 	<distributionManagement>
 		 <snapshotRepository>
 		    <id>NexusRepo</id>
-		    <url>http://ec2-98-81-134-233.compute-1.amazonaws.com:8081/repository/batch15-repo-snapshot/</url>
+		    <url>http://ec2-54-172-118-210.compute-1.amazonaws.com:8081/repository/maven-snapshot-repository/</url>
 		 </snapshotRepository>
 		
 		<repository>
 		    <id>NexusRepo</id>
-		    <url>http://ec2-98-81-134-233.compute-1.amazonaws.com:8081/repository/batch15-repo-repease/</url>
+		    <url>http://ec2-54-172-118-210.compute-1.amazonaws.com:8081/repository/maven-repository-final//</url>
 		</repository>
   	</distributionManagement>
 
