@@ -25,6 +25,13 @@ maven 'Maven_3.9.9'
                 sh 'mvn clean install'
             }
         }
+        stage('scanning the docker image using trivy'){
+        steps{
+                echo 'scanning the image to check the vulneberabilites,bugs and security isssues'
+                sh 'docker pull nginx:latest'
+                sh 'trivy image --exit-code 1 --severity HIGH, CRITICAL, LOW, MEDIUM, UNKONWN nginx;latest'
+             }
+         }
         stage('deploying the .war artifact using tomcat'){
             steps{
                 echo 'deploying .war using tomcat'
