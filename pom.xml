@@ -17,12 +17,12 @@
 	<distributionManagement>
 		 <snapshotRepository>
 		    <id>NexusRepo</id>
-		    <url>http://ec2-54-172-118-210.compute-1.amazonaws.com:8081/repository/maven-snapshot-repository/</url>
+		    <url>http://http://ec2-54-224-42-175.compute-1.amazonaws.com:8081/repository/facebook-snapshot/</url>
 		 </snapshotRepository>
 		
 		<repository>
 		    <id>NexusRepo</id>
-		    <url>http://ec2-54-172-118-210.compute-1.amazonaws.com:8081/repository/maven-repository-final//</url>
+		    <url>http://http://ec2-54-224-42-175.compute-1.amazonaws.com:8081/repository/facebook-release/</url>
 		</repository>
   	</distributionManagement>
 
