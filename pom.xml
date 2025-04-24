@@ -17,12 +17,12 @@
 	<distributionManagement>
 		 <snapshotRepository>
 		    <id>NexusRepo</id>
-		    <url>http://http://ec2-54-224-42-175.compute-1.amazonaws.com:8081/repository/facebook-snapshot/</url>
+		    <url>http://ec2-54-224-42-175.compute-1.amazonaws.com:8081/repository/facebook-snapshot/</url>
 		 </snapshotRepository>
 		
 		<repository>
 		    <id>NexusRepo</id>
-		    <url>http://http://ec2-54-224-42-175.compute-1.amazonaws.com:8081/repository/facebook-release/</url>
+		    <url>http://ec2-54-224-42-175.compute-1.amazonaws.com:8081/repository/facebook-release/</url>
 		</repository>
   	</distributionManagement>
 
