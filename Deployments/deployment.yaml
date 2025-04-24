@@ -28,6 +28,6 @@ spec:
     spec:
       containers:
         - name: fbcont1
-          image: thajuddin9339/batch15:39
+          image: thajuddin9339/batch15:40
           ports:
             - containerPort: 8080
