@@ -1,0 +1,83 @@
+pipeline {
+    agent any
+    tools {
+        maven 'Maven_3.9.9'
+    }
+    triggers {
+        githubPush()
+    }
+    stages {
+        stage('cleaning the workspace') {
+            steps {
+                cleanWs()
+            }
+        }
+        stage('cloneing the code') {
+            steps {
+                echo 'clonening the code from github'
+                git branch: 'main', url: 'https://github.com/taj5149/mindcircuit15d-cicd-project.git'
+            }
+        }
+        stage('sonarqube scan') {
+            steps {
+                echo 'using sonarqube we are doing code quality check'
+                sh 'ls -lrth'
+                sh '''  mvn sonar:sonar\
+                      -Dsonar.host.url=http://ec2-54-211-53-177.compute-1.amazonaws.com:9000/\
+                      -Dsonar.login=squ_2e244c5102f911d81df8ee9198b5a476f1a8ece8
+     '''
+            }
+        }
+        stage('build the code') {
+            steps {
+                echo 'building the code'
+                sh 'mvn clean package'
+            }
+        }
+        stage('docker image build stage') {
+            steps {
+                echo 'docker image building stage '
+                sh 'docker build -t thajuddin9339/batch15:${BUILD_NUMBER} .'
+            }
+        }
+        stage('scanning the docker image using trivy') {
+            steps {
+                script {
+                    echo 'scanning the image using trivy'
+                    // sh 'docker pull thajuddin9339/batch15:${BUILD_NUMBER}'
+                    sh 'trivy image --exit-code 1 --severity HIGH,CRITICAL thajuddin9339/batch15:${BUILD_NUMBER}'
+                }
+            }
+        }
+        stage('pushing the image to our dockerhub account') {
+            steps {
+                script {
+                    withCredentials([string(credentialsId: 'dockerhub', variable: 'dockerhub')]) {
+                        sh 'docker login -u thajuddin9339 -p ${dockerhub}'
+                    }
+                    sh 'docker push thajuddin9339/batch15:${BUILD_NUMBER}'
+                    echo 'Image pushed successfully to our dockerhub account'
+                }
+            }
+        }
+        stage('updating the deployment file in github') {
+            environment {
+                GIT_REPO_NAME = "mindcircuit15d-cicd-project"
+                GIT_USER_NAME = "taj5149"
+            }
+            steps {
+                echo 'updating the deployment file in github'
+                withCredentials([string(credentialsId: 'githubtoken', variable: 'githubtoken')]) {
+                    sh '''
+                        git config user.email "thajuddin9339@gmail.com"
+                        git config user.name "taj5149"
+                        sed -i "s/batch15:.*/batch15:${BUILD_NUMBER}/g" Deployments/deployment.yaml
+                        git add Deployments/deployment.yaml
+                        git commit -m "update deployment image to new version ${BUILD_NUMBER}"
+                        git push https://${githubtoken}@github.com/${GIT_USER_NAME}/${GIT_REPO_NAME} HEAD:main
+                    '''
+                }
+            }
+        }
+    }
+}
